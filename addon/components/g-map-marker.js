@@ -39,6 +39,7 @@ const GMapMarkerComponent = Ember.Component.extend({
     this.setMap();
     this.setOnClick();
     this.setOnDrag();
+    this.setOnDoubleClick();
   },
 
   willDestroyElement() {
@@ -186,6 +187,13 @@ const GMapMarkerComponent = Ember.Component.extend({
     const marker = this.get('marker');
     if (isPresent(marker)) {
       marker.addListener('click', () => this.sendOnClick());
+    }
+  },
+
+  setOnDoubleClick() {
+    const marker = this.get('marker');
+    if (isPresent(marker) && this.attrs.onDoubleClick) {
+      marker.addListener('dblclick', () => this.attrs.onDoubleClick());
     }
   },
 
