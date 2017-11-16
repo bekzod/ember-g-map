@@ -218,9 +218,9 @@ const GMapMarkerComponent = Ember.Component.extend({
     const group = this.get('group');
 
     if (typeOf(onClick) === 'function') {
-      onClick();
+      onClick(this);
     } else {
-      this.sendAction('onClick');
+      this.sendAction('onClick', this);
     }
 
     if (isPresent(group)) {
