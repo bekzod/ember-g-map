@@ -46,35 +46,51 @@ const GMapMarkerComponent = Ember.Component.extend({
     this.get('mapContext').unregisterMarker(this);
   },
 
-  registerInfowindow(infowindow, openEvent, closeEvent) {
+  registerInfowindow(infowindow, openEvent, closeEvent, closeDelay) {
     this.set('infowindow', infowindow);
-    this.attachOpenCloseEvents(infowindow, openEvent, closeEvent);
+    this.attachOpenCloseEvents(infowindow, openEvent, closeEvent, closeDelay);
   },
 
   unregisterInfowindow() {
     this.set('infowindow', null);
   },
 
-  attachOpenCloseEvents(infowindow, openEvent, closeEvent) {
+  attachOpenCloseEvents(infowindow, openEvent, closeEvent, closeDelay) {
     const marker = this.get('marker');
     if (openEvent === closeEvent) {
       this.attachTogglingInfowindowEvent(marker, infowindow, openEvent);
     } else {
       this.attachOpenInfowindowEvent(marker, infowindow, openEvent);
-      this.attachCloseInfowindowEvent(marker, infowindow, closeEvent);
+      this.attachCloseInfowindowEvent(marker, infowindow, closeEvent, closeDelay);
     }
   },
 
   attachOpenInfowindowEvent(marker, infowindow, event) {
     if (isPresent(event)) {
-      marker.addListener(event, () => infowindow.open());
+      marker.addListener(event, () => {
+        if (infowindow._debounceTimer !== undefined) {
+          run.cancel(infowindow._debounceTimer);
+          infowindow._debounceTimer = undefined;
+        }
+        infowindow.open()
+      });
     }
   },
 
-  attachCloseInfowindowEvent(marker, infowindow, event) {
+  attachCloseInfowindowEvent(marker, infowindow, event, closeDelay) {
     if (isPresent(event)) {
-      marker.addListener(event, () => infowindow.close());
+      marker.addListener(event, () => {
+        if (closeDelay) {
+          infowindow._debounceTimer = run.debounce(this, 'closeInfoWindow', infowindow, closeDelay);
+        } else {
+          infowindow.close()
+        }
+      });
     }
+  },
+
+  closeInfoWindow(infowindow) {
+    infowindow.close()
   },
 
   attachTogglingInfowindowEvent(marker, infowindow, event) {

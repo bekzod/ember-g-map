@@ -143,7 +143,7 @@ const GMapInfowindowComponent = Ember.Component.extend({
     if (isPresent(infowindow) && isPresent(map) && isPresent(marker)) {
       const openEvent = this.retrieveOpenEvent();
       const closeEvent = this.retrieveCloseEvent();
-      context.registerInfowindow(this, openEvent, closeEvent);
+      context.registerInfowindow(this, openEvent, closeEvent, this.get('closeDelay'));
     }
   },
 
