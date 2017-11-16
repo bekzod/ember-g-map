@@ -39,6 +39,8 @@ const GMapMarkerComponent = Ember.Component.extend({
     this.setMap();
     this.setOnClick();
     this.setOnDrag();
+    this.setOnMouseover();
+    this.setOnMouseout();
   },
 
   willDestroyElement() {
@@ -170,6 +172,20 @@ const GMapMarkerComponent = Ember.Component.extend({
     const marker = this.get('marker');
     if (isPresent(marker)) {
       marker.addListener('click', () => this.sendOnClick());
+    }
+  },
+
+  setOnMouseover() {
+    const marker = this.get('marker');
+    if (isPresent(marker) && this.attrs.onMouseover) {
+      marker.addListener('mouseover', ()=> this.attrs.onMouseover(this));
+    }
+  },
+
+  setOnMouseout() {
+    const marker = this.get('marker');
+    if (isPresent(marker) && this.attrs.onMouseout) {
+      marker.addListener('mouseout', ()=> this.attrs.onMouseout(this));
     }
   },
 
